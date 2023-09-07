@@ -2,12 +2,15 @@ from fpdf import FPDF
 import pandas as pd
 
 df = pd.read_csv("topics.csv")
+total_pdf_pages = df['Pages'].sum()
 
 pdf = FPDF(orientation="P", unit="mm", format="A4")
 pdf.set_auto_page_break(auto=False, margin=0)  # Essential for the footer to be correctly placed
+count = 0
 
 for index, row in df.iterrows():
     pdf.add_page()
+    count += 1
 
     # Header :
     pdf.set_font(family="Times", style="B", size=24)
@@ -19,15 +22,16 @@ for index, row in df.iterrows():
     pdf.ln(265)  # The total A4 page is 297m long
     pdf.set_font(family="Times", style="I", size=8)
     pdf.set_text_color(180, 180, 180)
-    pdf.cell(w=0, h=10, txt=row['Topic'], align="R")
+    pdf.cell(w=0, h=10, txt=f"{row['Topic']} {count}/{total_pdf_pages}", align="R")
 
     for i in range(row['Pages'] - 1):
         pdf.add_page()
+        count += 1
 
         # Footer :
         pdf.ln(277)  # longer than the previous footer because there are no header
         pdf.set_font(family="Times", style="I", size=8)
         pdf.set_text_color(180, 180, 180)
-        pdf.cell(w=0, h=10, txt=row['Topic'], align="R")
+        pdf.cell(w=0, h=10, txt=f"{row['Topic']} {count}/{total_pdf_pages}", align="R")
 
-pdf.output("output.pdf")
+pdf.output("Note_sheets.pdf")
